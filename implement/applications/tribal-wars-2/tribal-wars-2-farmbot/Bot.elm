@@ -2194,7 +2194,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 		//  mapService.jumpToVillage(coordinates.x, coordinates.y, villageData.id);
 		if(groupService.getVillageGroups(villageData.id).findIndex(z => z.icon == "-0020")!==-1)
 		{
-			console.log('this village is already being attacked');
+			//console.log('this village is already being attacked');
 		}
 		else if(villageData.report_result===0 || villageData.report_haul===1)
 		{
@@ -2204,7 +2204,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 		else
 		{		
 			//let attackInterval=argument.atkInterval*60
-			let attackInterval = 50*60; //in seconds
+			let attackInterval = 61*60; //in seconds
 			let raidBonus=JSON.parse(JSON.stringify(injector.get('modelDataService').getSelectedCharacter().data.effectList.effects.find(z => z.type == "farm_speed_increase").factor)) //tribe's 
 			let selectedVillage = injector.get('modelDataService').getSelectedVillage();
 			let rallyBonus=selectedVillage.buildingData.data.rally_point.specialFunction.currentValue/100;
@@ -2269,7 +2269,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 				}
 				else
 				{
-					console.log('Interval was short '+timePassed/60);
+					//console.log('Interval was short '+timePassed/60);
 				}
 			}
 		}
