@@ -2192,7 +2192,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 		}
 
 		//  mapService.jumpToVillage(coordinates.x, coordinates.y, villageData.id);
-		if(groupService.getVillageGroups(villageData.id).icon==='-0020')
+		if(groupService.getVillageGroups(villageData.id)[0].icon==='-0020')
 		{
 			console.log('this village is already being attacked');
 			return;
