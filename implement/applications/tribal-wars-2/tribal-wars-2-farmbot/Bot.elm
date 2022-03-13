@@ -2225,7 +2225,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 				targetX = coordinates.x;
 			}			
 			let distance = Math.sqrt((originX-targetX)*(originX-targetX)+0.75*(selectedVillage.data.y-coordinates.y)*(selectedVillage.data.y-coordinates.y));
-			let presetUnits = injector.get('modelDataService').getPresetList().presets[presetId];
+			let presetUnits = injector.get('modelDataService').getPresetList().presets[presetId].units;
 			let slowestWalk;
 			if(presetUnits.light_cavalry>0 || presetUnits.mounted_archer>0)
 			{
