@@ -2256,10 +2256,11 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
          //otherwise we check how long it has been since we attacked, and how long it will take to reach the barb.
          if(villageData.report_result===1)
          {
-            if((Math.floor(Date.now()/1000)+travelTime-villageData.report_time_created)>attackInterval)
+            let timePassed=Math.floor(Date.now()/1000)+travelTime-villageData.report_time_created;
+            if(timePassed>attackInterval)
             {
                sendPresetAttack(presetId, villageData.id);
-            }
+            } else {console.log('Interval was short '+timePassed/60)}
          }
       }
    });
