@@ -2192,7 +2192,7 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 		}
 
 		//  mapService.jumpToVillage(coordinates.x, coordinates.y, villageData.id);
-		if(groupService.getVillageGroups(villageData.id)[0].icon==='-0020')
+		if(groupService.getVillageGroups(villageData.id).findIndex(z => z.icon == "-0020")!==-1)
 		{
 			console.log('this village is already being attacked');
 		}
@@ -2257,7 +2257,6 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 			if(typeof slowestWalk === 'undefined')
 			{
 				console.log('Error. Walk speed is zero');
-				return;
 			};
 			let travelTime=Math.floor(distance*slowestWalk*60); //in seconds
 			//otherwise we check how long it has been since we attacked, and how long it will take to reach the barb.
