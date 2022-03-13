@@ -2195,9 +2195,8 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 		if(groupService.getVillageGroups(villageData.id)[0].icon==='-0020')
 		{
 			console.log('this village is already being attacked');
-			return;
 		}
-		if(villageData.report_result===0 || villageData.report_haul===1)
+		else if(villageData.report_result===0 || villageData.report_haul===1)
 		{
 			//if there is no last report, it will sendPresetAttack. If there was a full haul in the last attack, it will sendPresetAttack
 			sendPresetAttack(presetId, villageData.id);
@@ -2272,7 +2271,6 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
 				else
 				{
 					console.log('Interval was short '+timePassed/60);
-					return;
 				}
 			}
 		}
