@@ -2152,14 +2152,14 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
     in
     """
 (function sendPresetAttackToCoordinates(argument) {
-    coordinates = argument.coordinates;
-    presetId = argument.presetId;
+    let coordinates = argument.coordinates;
+    let presetId = argument.presetId;
 
-    autoCompleteService = angular.element(document.body).injector().get('autoCompleteService');
-    socketService = angular.element(document.body).injector().get('socketService');
-    routeProvider = angular.element(document.body).injector().get('routeProvider');
-    mapService = angular.element(document.body).injector().get('mapService');
-    presetService = angular.element(document.body).injector().get('presetService');
+    let autoCompleteService = angular.element(document.body).injector().get('autoCompleteService');
+    let socketService = angular.element(document.body).injector().get('socketService');
+    let routeProvider = angular.element(document.body).injector().get('routeProvider');
+    let mapService = angular.element(document.body).injector().get('mapService');
+    let presetService = angular.element(document.body).injector().get('presetService');
 
     sendPresetAttack = function sendPresetAttack(presetId, targetVillageId) {
         //  TODO: Get 'type' from 'conf/commandTypes'.TYPES.ATTACK
@@ -2182,20 +2182,87 @@ startSendPresetAttackToCoordinatesScript coordinates { presetId } =
         });
     };
 
-    autoCompleteService.villageByCoordinates(coordinates, function(villageData) {
-        //  console.log(JSON.stringify({ coordinates : coordinates, villageByCoordinates: villageData}));
+   autoCompleteService.villageByCoordinates(coordinates, function(villageData) {
+      //  console.log(JSON.stringify({ coordinates : coordinates, villageByCoordinates: villageData}));
 
-        if(villageData.id == null)
-        {
-            //  console.log("Did not find village at " + JSON.stringify(coordinates));
-            return; // No village here.
-        }
+      if(villageData.id == null)
+      {
+         //  console.log("Did not find village at " + JSON.stringify(coordinates));
+         return; // No village here.
+      }
 
-        //  mapService.jumpToVillage(coordinates.x, coordinates.y, villageData.id);
+      //  mapService.jumpToVillage(coordinates.x, coordinates.y, villageData.id);
 
-        sendPresetAttack(presetId, villageData.id);
-    });
-
+      //let attackInterval=argument.atkInterval*60
+      let attackInterval = 50*60; //in seconds
+      let raidBonus=JSON.parse(JSON.stringify(injector.get('modelDataService').getSelectedCharacter().data.effectList.effects.find(z => z.type == "farm_speed_increase").factor)) //tribe's 
+      let selectedVillage = injector.get('modelDataService').getSelectedVillage();
+      let rallyBonus=selectedVillage.buildingData.data.rally_point.specialFunction.currentValue/100;
+      let originX; let targetX;
+      if(selectedVillage.data.y%2 == 0 )
+      {/*(if even)*/
+         originX = selectedVillage.data.x - 0.5;
+      } else
+      {
+         originX = selectedVillage.data.x;
+      }			
+      if(coordinates.y%2 == 0)
+      {/*(if even)*/
+         targetX = coordinates.x - 0.5;
+      } else
+      {
+         targetX = coordinates.x;
+      }			
+      let distance=Math.sqrt((originX-targetX)*(originX-targetX)+0.75*(selectedVillage.data.y-coordinates.y)*(selectedVillage.data.y-coordinates.y));	
+      let presetUnits = injector.get('modelDataService').getPresetList().presets[presetId];
+      let slowestWalk;
+      if(presetUnits.light_cavalry>0 || presetUnits.mounted_archer>0)
+      {
+         slowestWalk=8;
+      }
+      if(presetUnits.heavy_cavalry>0)
+      {
+         slowestWalk=9;
+      }
+      if((presetUnits.axe+ presetUnits.archer+presetUnits.spear+presetUnits.doppelsoldner)>0)
+      {
+         slowestWalk=14;
+      }	
+      if(presetUnits.sword>0)
+      {
+         slowestWalk=18;
+      }	
+      if((presetUnits.ram+presetUnits.catapult)>0)
+      {
+         slowestWalk=24;
+      }
+      if(presetUnits.snob>0)
+      {
+         slowestWalk=35;
+      }
+      if(presetUnits.trebuchet>0)
+      {
+         slowestWalk=50;
+      }
+      if(typeof slowestWalk === 'undefined'){console.log('Error. Walk speed is zero')};
+      let travelTime=Math.floor(distance*slowestWalk*60); //in seconds
+      if(villageData.report_result===0 || villageData.report_haul===1)
+      {
+         //if there is last report, it will sendPresetAttack. If there was a full haul in the last attack, it will sendPresetAttack
+         sendPresetAttack(presetId, villageData.id);
+      } 
+      else
+      {
+         //otherwise we check how long it has been since we attacked, and how long it will take to reach the barb.
+         if(villageData.report_result===1)
+         {
+            if((Math.floor(Date.now()/1000)+travelTime-villageData.report_time_created)>attackInterval)
+            {
+               sendPresetAttack(presetId, villageData.id);
+            }
+         }
+      }
+   });
     return JSON.stringify({ startedSendPresetAttackByCoordinates : coordinates });
 })(""" ++ argumentJson ++ ")"
 
